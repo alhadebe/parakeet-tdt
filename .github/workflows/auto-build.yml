@@ -65,6 +65,13 @@ jobs:
         with:
           repository: ${{ env.UPSTREAM_REPO }}
           ref: ${{ env.LATEST_SHA }}
+          
+      - name: Patch upstream Dockerfile (Fix onnxruntime version)
+        if: env.build_needed == 'true'
+        run: |
+          # The upstream repo hardcodes a non-existent onnxruntime==1.26.0 in the CPU Dockerfile.
+          # This replaces it on-the-fly with a relaxed version constraint so it builds successfully.
+          sed -i 's/onnxruntime==1.26.0/onnxruntime>=1.18.1/g' Dockerfile.cpu
 
       - name: Set up Docker Buildx
         if: env.build_needed == 'true'
