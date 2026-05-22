@@ -73,6 +73,10 @@ jobs:
           # This replaces it on-the-fly with a relaxed version constraint so it builds successfully.
           sed -i 's/onnxruntime==1.26.0/onnxruntime>=1.18.1/g' Dockerfile.cpu
 
+          # 2. Force PyTorch to use CPU-only wheels. 
+          # This prevents pip from downloading 3GB+ of useless NVIDIA CUDA binaries into the CPU image.
+          sed -i 's|pip install --no-cache-dir -r|pip install --no-cache-dir --extra-index-url https://download.pytorch.org/whl/cpu -r|g' Dockerfile.cpu
+
       - name: Set up Docker Buildx
         if: env.build_needed == 'true'
         uses: docker/setup-buildx-action@v3
